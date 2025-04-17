@@ -5,16 +5,16 @@
         <BaseTitle title="Categories" />
         <div class="category__title">
           <h3>Browse By Category</h3>
-          <div class="button-swiper">
+          <div v-if="data?.categories && data.categories.length" class="button-swiper">
             <span type="button" class="category__btn-prev" />
             <span type="button" class="category__btn-next" />
           </div>
         </div>
-        <div class="category__list">
+        <div v-if="data?.categories && data.categories.length" class="category__list">
           <client-only>
             <Swiper v-bind="swiperConfig" class="product-swiper">
               <SwiperSlide
-                v-for="category in [categories[1], ...categories]"
+                v-for="category in data.categories"
                 :key="category.id"
               >
                 <div class="category-item">
@@ -34,7 +34,6 @@
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Navigation } from "swiper/modules";
 import BaseTitle from "~/components/common/base-title.vue";
-import { categories } from "~/resources/home-category";
 
 const swiperConfig = reactive({
   initialSlide: 1,
@@ -51,6 +50,16 @@ const swiperConfig = reactive({
     disableOnInteraction: false,
   },
   modules: [Autoplay, Navigation],
+});
+
+type Category = {
+  id: number;
+  name: string;
+  img: string;
+}
+
+const { data } = await useFetch<{ categories: Category[] }>('/api/category', {
+  method: 'get',
 });
 </script>
 

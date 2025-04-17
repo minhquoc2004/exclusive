@@ -30,11 +30,11 @@
         <div class="main-cateogry__right">
           <client-only>
             <Swiper
-              v-if="banner && banner.length"
+              v-if="data?.banner && data.banner.length"
               v-bind="swiperConfig"
               class="banner-swiper"
             >
-              <SwiperSlide v-for="item in banner" :key="item.id">
+              <SwiperSlide v-for="item in data.banner" :key="item.id">
                 <img :src="item.image" :alt="`banner-${item.id}`" />
               </SwiperSlide>
             </Swiper>
@@ -47,8 +47,6 @@
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Autoplay } from "swiper/modules";
-import { useBanner } from "~/composables/useBanner";
-const { banner, getBanner } = useBanner();
 
 const swiperConfig = reactive({
   initialSlide: 0,
@@ -64,8 +62,8 @@ const swiperConfig = reactive({
   modules: [Autoplay, Pagination],
 });
 
-onMounted(() => {
-  getBanner();
+const { data } = await useFetch('/api/banner', {
+  method: 'get',
 });
 </script>
 

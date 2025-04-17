@@ -8,10 +8,10 @@
           <BaseButton class="base-button--primary" :width="159" :height="56">View All</BaseButton>
         </div>
       </div>
-      <div class="best-selling__list">
+      <div v-if="data?.products && data.products.length" class="best-selling__list">
         <client-only>
           <Swiper v-bind="swiperConfig" class="product-swiper">
-            <SwiperSlide v-for="product in products" :key="product.id">
+            <SwiperSlide v-for="product in data.products" :key="product.id">
               <Card :card="product" />
             </SwiperSlide>
           </Swiper>
@@ -27,9 +27,6 @@ import { Autoplay } from "swiper/modules";
 import BaseTitle from "~/components/common/base-title.vue";
 import Card from "~/components/common/card.vue";
 import BaseButton from "~/components/common/base-button.vue";
-import { useProduct } from "~/composables/useProduct";
-
-const { products, getProducts } = useProduct();
 
 const swiperConfig = reactive({
   initialSlide: 0,
@@ -44,8 +41,13 @@ const swiperConfig = reactive({
   modules: [Autoplay],
 });
 
-onMounted(() => {
-  getProducts("best-selling");
+const { data } = await useFetch('/api/product', {
+  method: 'get',
+  query: {
+    page: 1,
+    limit: 20,
+    category: 'best-selling',
+  },
 });
 </script>
 

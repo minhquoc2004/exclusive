@@ -54,7 +54,7 @@ import dayjs from "dayjs";
 const targetDate = ref(
   dayjs().day() === 0 ? dayjs().endOf("day") : dayjs().endOf("week")
 );
-const interval = ref(undefined);
+const interval = ref<NodeJS.Timeout | undefined>(undefined);
 const countdown = ref({
   days: 0,
   hours: 0,
@@ -78,7 +78,7 @@ const updateCountdown = () => {
   }
 };
 
-const formatUnit = (num) => {
+const formatUnit = (num: number) => {
   return num < 10 ? "0" + num : num.toString();
 };
 
@@ -88,7 +88,9 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  clearInterval(interval);
+  if (interval.value) {
+    clearInterval(interval.value);
+  }
 });
 </script>
 

@@ -9,16 +9,16 @@
           <span type="button" class="explore-product__btn-next" />
         </div>
       </div>
-      <div v-if="products && products.length" class="explore-product__list">
+      <div v-if="data?.products && data.products.length" class="explore-product__list">
         <client-only>
           <Swiper v-bind="swiperConfig" class="product-swiper">
-            <SwiperSlide v-for="product in products" :key="product.id">
+            <SwiperSlide v-for="product in data.products" :key="product.id">
               <Card :card="product" />
             </SwiperSlide>
           </Swiper>
         </client-only>
       </div>
-      <div v-if="products && products.length" class="explore-product__view-all">
+      <div v-if="data?.products && data.products.length" class="explore-product__view-all">
         <BaseButton class="base-button--primary" :width="234" :height="56">View All Products</BaseButton>
       </div>
     </div>
@@ -31,9 +31,6 @@ import { Autoplay, Navigation, Grid } from "swiper/modules";
 import BaseTitle from "~/components/common/base-title.vue";
 import Card from "~/components/common/card.vue";
 import BaseButton from "~/components/common/base-button.vue";
-import { useProduct } from "~/composables/useProduct";
-
-const { products, getProducts } = useProduct();
 
 const swiperConfig = reactive({
   initialSlide: 0,
@@ -56,8 +53,13 @@ const swiperConfig = reactive({
   modules: [Autoplay, Navigation, Grid],
 });
 
-onMounted(() => {
-  getProducts("explore");
+const { data } = await useFetch('/api/product', {
+  method: 'get',
+  query: {
+    page: 1,
+    limit: 20,
+    category: 'explore',
+  },
 });
 </script>
 
