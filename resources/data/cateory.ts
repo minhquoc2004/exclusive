@@ -1,4 +1,4 @@
-export const categories = [
+export const categoryDatabase = [
   {
     id: 1,
     name: 'Phones',

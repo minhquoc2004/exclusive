@@ -49,18 +49,20 @@
             <span type="button" class="flash-sale__btn-next" />
           </div>
         </div>
-        <div v-if="products && products.length" class="flash-sales__products">
-          <client-only>
-            <Swiper v-bind="swiperConfig" class="product-swiper">
-              <SwiperSlide v-for="product in products" :key="product.id">
-                <Card :card="product" />
-              </SwiperSlide>
-            </Swiper>
-          </client-only>
-        </div>
-        <div v-if="products && products.length" class="flash-sales__view-all">
-          <BaseButton class="base-button--primary" :width="234" :height="56">View All Products</BaseButton>
-        </div>
+        <template v-if="data?.products && data.products.length">
+          <div class="flash-sales__products">
+            <client-only>
+              <Swiper v-bind="swiperConfig" class="product-swiper">
+                <SwiperSlide v-for="product in data.products" :key="product.id">
+                  <Card :card="product" />
+                </SwiperSlide>
+              </Swiper>
+            </client-only>
+          </div>
+          <div class="flash-sales__view-all">
+            <BaseButton class="base-button--primary" :width="234" :height="56">View All Products</BaseButton>
+          </div>
+        </template>
       </div>
     </div>
   </section>
@@ -73,9 +75,6 @@ import { Autoplay, Navigation } from "swiper/modules";
 import BaseTitle from "../common/base-title.vue";
 import Card from "~/components/common/card.vue";
 import BaseButton from "~/components/common/base-button.vue";
-import { useProduct } from "~/composables/useProduct";
-
-const { products, getProducts } = useProduct();
 
 const interval = ref<ReturnType<typeof setInterval> | undefined>(undefined);
 const countdown = ref({
@@ -95,10 +94,10 @@ const swiperConfig = reactive({
     prevEl: ".flash-sale__btn-prev",
   },
   loop: true,
-  // autoplay: {
-  //   delay: 3000,
-  //   disableOnInteraction: false,
-  // },
+  autoplay: {
+    delay: 3000,
+    disableOnInteraction: false,
+  },
   modules: [Autoplay, Navigation],
 });
 
@@ -121,10 +120,19 @@ const updateCountdown = () => {
     countdown.value = { days, hours, minutes, seconds };
   }
 };
+
+const { data } = await useFetch('/api/product', {
+  method: 'get',
+  query: {
+    page: 1,
+    limit: 20,
+    category: 'flash-sales',
+  },
+});
+
 onMounted(() => {
   updateCountdown();
   interval.value = setInterval(updateCountdown, 1000);
-  getProducts("flash-sales");
 });
 
 onBeforeUnmount(() => {
